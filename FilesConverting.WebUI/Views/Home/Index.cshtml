@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@(Html.Kendo().Grid<FilesConverting.WebUI.Models.JournalViewModel>()
+    .Name("gridJOURNAL")
+    .Columns(columns =>
+    {
+        columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(400);
+        columns.Bound(p => p.filename);
+        columns.Command(command => command.Custom("GetContent").Text("Скачать").Click("getContent")).Width(180);
+
+    })
+    //.Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation("Вы уверены что хотите удалить данную запись?"))
+    .ToolBar(toolbar =>
+    {
+    toolbar.Template(@<text>
+                @(Html.Kendo().Upload()
+                              .Name("files")
+                              .Async(a => a
+                                    .Save("AsyncSave", "JournalService")
+                                    //.Remove("Async_Remove", "Upload")
+                                    .AutoUpload(true)
+                               )
+                              .Validation(validation => {
+                                                validation.AllowedExtensions(new string[] { ".xml"});
+                                            })
+                )
+
+            </text>);
+})
+.Sortable()
+.Scrollable()
+.Filterable()
+.DataSource(dataSource => dataSource
+.Ajax()
+.Model(model => model.Id(id => id.id))
+//.Events(events => events.Error("error_handler"))
+.Read(read => read.Action("ReadForGrid", "JournalService"))
+//.Create(update => update.Action("CreateForGrid", "CategoryService"))
+//.Update(update=>update.Action("UpdateForGrid", "CategoryService"))
+//.Destroy(update => update.Action("DestroyForGrid", "CategoryService"))
+)
+)
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Ошибки:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+
+            kendo.alert(message);
+            var grid = $("#gridCategories").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+
+    function getContent(e) {
+        e.preventDefault();
+                
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "@Url.RouteUrl(new { Controller = "JournalService", Action = "GetContent"})/?id=" + dataItem.id;
+
+    }
+</script>
+
+
