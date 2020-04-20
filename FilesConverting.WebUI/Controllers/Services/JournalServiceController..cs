@@ -34,7 +34,9 @@ namespace FilesConverting.WebUI.Controllers.Services
             {
                 id = j.ID,
                 upload= j.UPLOAD,
-                filename = j.FILENAME
+                filename = j.FILENAME,
+                filesize = j.FILESIZE,
+                modified = j.MODIFIED
             });
 
             return Json(journal);
@@ -47,11 +49,13 @@ namespace FilesConverting.WebUI.Controllers.Services
             {
                 foreach (var file in files)
                 {
-                    // Some browsers send file names with full path.
-                    // We are only interested in the file name.
+                    
                     var fileName = Path.GetFileName(file.FileName);
-                    var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
 
+                    if (db.JOURNAL.Get().Any(n => n.FILENAME == fileName))
+                    {
+                        return Content("Файл с таким именем уже существует в базе данных!");
+                    }  
                     JOURNAL journal = new JOURNAL();
                     journal.UPLOAD = DateTime.Now;
                     journal.FILENAME = fileName;
@@ -60,7 +64,15 @@ namespace FilesConverting.WebUI.Controllers.Services
                     journal.FILESIZE = file.ContentLength;
                     file.InputStream.Read(journal.FILECONTENT, 0, file.ContentLength);
 
-                    db.JOURNAL.Create(journal);
+                    try
+                    {
+                        db.JOURNAL.Create(journal);
+                    }
+                    catch(Exception ex)
+                    {
+                        
+                        return Content(ex.Message);
+                    }
                 }
             }
 
@@ -79,6 +91,29 @@ namespace FilesConverting.WebUI.Controllers.Services
             {
                 return null;
             }
+        }
+
+        public ActionResult Modify(long id)
+        {
+            var entity = db.JOURNAL.Get().FirstOrDefault(j=>j.ID == id);
+             if (entity == null)
+                 return Json(new { message = "errors", result = "Файл не найден!" }, JsonRequestBehavior.AllowGet);
+
+             try
+             {
+                 db.Modify(entity);
+
+                 return Json(new { message = "OK" }, JsonRequestBehavior.AllowGet);
+
+             }
+             catch (Exception exc)
+             {
+
+                 return Json(new { message = "errors", result = exc.Message }, JsonRequestBehavior.AllowGet);
+             }
+
+            
+
         }
 
         /*//Create
@@ -138,41 +173,35 @@ namespace FilesConverting.WebUI.Controllers.Services
             return Json(new[] { category }.ToDataSourceResult(request, ModelState));
 
         }
-
+        */
         //Delete
         [HttpPost]
-        public ActionResult DestroyForGrid([DataSourceRequest]DataSourceRequest request, CategoryViewModel category)
+        public ActionResult DestroyForGrid([DataSourceRequest]DataSourceRequest request, JournalViewModel journal)
         {
            
-                CATEGORY entity = db.CATEGORIES.Get().FirstOrDefault(c => c.ID == category.id);
-                if (entity == null)
+                JOURNAL entity = db.JOURNAL.Get().FirstOrDefault(j => j.ID == journal.id);
+                if (entity != null)
                 {
-                    ModelState.AddModelError("CATEGORY", String.Format("Категория '{0}' не обнаружена в базе данных!", category.name));
-                }
-
-                //Used  in test 
-                if (db.TESTS.Get().Any(p => p.CATEGORYID == category.id))
-                {
-                    ModelState.AddModelError("CATEGORY","Невозможно удалить данную запись!<br>" + String.Format("К категории '{0}' относятся следующие тесты: <ul><li> {1} </li></ul>", category.name, String.Join("</li><li>", db.TESTS.Get().Where(p => p.CATEGORYID == entity.ID).Select(s => s.NAME))));
+                    ModelState.AddModelError("JOURNAL", String.Format("Файл '{0}' не обнаружена в базе данных!", journal.filename));
                 }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    db.CATEGORIES.Delete(entity);
+                    db.JOURNAL.Delete(entity);
 
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("CATEGORY", ex.Message);
+                    ModelState.AddModelError("JOURNAL", ex.Message);
                 }
             }
 
-            return Json(new[] { category }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { journal }.ToDataSourceResult(request, ModelState));
 
         }
-        */
+        
 
     }
 }

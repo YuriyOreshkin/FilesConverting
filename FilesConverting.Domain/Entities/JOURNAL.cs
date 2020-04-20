@@ -20,5 +20,7 @@ namespace FilesConverting.Domain.Entities
 
         public int FILESIZE { get; set; }
 
+        public bool MODIFIED { get; set; }
+
     }
 }

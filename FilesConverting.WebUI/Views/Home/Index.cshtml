@@ -4,49 +4,126 @@
 }
 
 <h2>Index</h2>
+@Html.ActionLink("Работник", "Employee", "Home")
 
+<div id="appendto" style="background: #edeef0;"></div>
 @(Html.Kendo().Grid<FilesConverting.WebUI.Models.JournalViewModel>()
-    .Name("gridJOURNAL")
-    .Columns(columns =>
-    {
-        columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(400);
-        columns.Bound(p => p.filename);
-        columns.Command(command => command.Custom("GetContent").Text("Скачать").Click("getContent")).Width(180);
+            .Name("gridJOURNAL")
+            .Columns(columns =>
+            {
+                columns.Bound(p => p.modified).ClientTemplate("<input  class='k-checkbox' type='checkbox'  #=modified ?  checked='checked' : '' #  /><label class='k-checkbox-label'></label>").Width(100).Filterable(false).Sortable(false);
+                columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(200);
+                columns.Bound(p => p.filename);
+                columns.Bound(p => p.filesize).Width(200).Filterable(false);
+                columns.Bound(p => p.id).Title("").ClientTemplate(
+                                            " # if(modified){ #" +
+                                                "<a class='k-button' href='/JournalService/GetContent?id= #= id#'>Скачать</a>" +
+                                            "# }else { #" +
+                                                "<button id='modify_#= id #' class='k-button k-primary' onclick='Modify(#= id#)'>Заменить</button>" +
+                                            "# } #"
+                                        ).Sortable(false).Filterable(false).Width(200); 
+                columns.Command(command => command.Destroy()).Width(180);
 
-    })
-    //.Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation("Вы уверены что хотите удалить данную запись?"))
-    .ToolBar(toolbar =>
-    {
-    toolbar.Template(@<text>
-                @(Html.Kendo().Upload()
-                              .Name("files")
-                              .Async(a => a
-                                    .Save("AsyncSave", "JournalService")
-                                    //.Remove("Async_Remove", "Upload")
-                                    .AutoUpload(true)
-                               )
-                              .Validation(validation => {
-                                                validation.AllowedExtensions(new string[] { ".xml"});
-                                            })
-                )
+            })
+            //.Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation("Вы уверены что хотите удалить данную запись?"))
+            .ToolBar(toolbar =>
+            {
+            toolbar.Template(@<text>
+                    @(Html.Kendo().Upload()
+                                              .Name("files")
+                                              .Async(a => a
+                                                    .Save("AsyncSave", "JournalService")
+                                                    //.Remove("Async_Remove", "Upload")
+                                                    .AutoUpload(true)
+                                              )
+                                              .Events(ev =>
+                                                      {
+                                                          ev.Success("onUploadSuccess");
+                                                          ev.Error("onUploadError");
 
-            </text>);
-})
-.Sortable()
-.Scrollable()
-.Filterable()
-.DataSource(dataSource => dataSource
-.Ajax()
-.Model(model => model.Id(id => id.id))
-//.Events(events => events.Error("error_handler"))
-.Read(read => read.Action("ReadForGrid", "JournalService"))
-//.Create(update => update.Action("CreateForGrid", "CategoryService"))
-//.Update(update=>update.Action("UpdateForGrid", "CategoryService"))
-//.Destroy(update => update.Action("DestroyForGrid", "CategoryService"))
+                                                      })
+                                              .Validation(validation =>
+                                                      {
+                                                          validation.AllowedExtensions(new string[] { ".xml" });
+                                                      })
+                    )
+
+                </text>);
+                    })
+                .Sortable()
+                .Scrollable()
+                .Filterable()
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(id => id.id))
+                .Events(events => events.Error("error_handler"))
+                .Read(read => read.Action("ReadForGrid", "JournalService"))
+                .Destroy(read => read.Action("DestroyForGrid", "JournalService"))
+                .Sort(s => s.Add(p => p.upload).Descending())
+            //.Create(update => update.Action("CreateForGrid", "CategoryService"))
+            //.Update(update=>update.Action("UpdateForGrid", "CategoryService"))
+            //.Destroy(update => update.Action("DestroyForGrid", "CategoryService"))
+            )
 )
-)
 
+@(Html.Kendo().Notification()
+                                          .Name("displayNotification")
+                                          .AppendTo("#appendto")
+                                          .Stacking(NotificationStackingSettings.Down)
+                                          .Animation(animation => animation
+                                                        .Close(effect => effect
+                                                            .SlideIn(SlideDirection.Left)
+                                                            .Reverse(true)
+                                                        )
+                                                      )
+                                          .AutoHideAfter(3000)
+                                          .Templates(t =>
+                                              {
+                                                  t.Add().Type("error").ClientTemplateID("errorTemplate");
+                                              })
+        )
+
+<script id="errorTemplate" type="text/x-kendo-template">
+    <div class="error-pass">
+        <span class="k-icon k-i-error" style="font-size: 36px;"></span>
+        <h3>Ошибка:</h3>
+        <p>#= message #</p>
+    </div>
+</script>
+<style>
+    /* Notifications */
+    .k-notification h3 {
+        padding: 10px 5px 1px;
+        font-size: 1em;
+        line-height: normal;
+    }
+
+    .k-notification .k-icon {
+        margin: 20px;
+        float: left;
+    }
+
+    
+</style>
 <script type="text/javascript">
+
+
+    //Show Notification
+    function showMessage(type, message) {
+        var notification = $("#displayNotification").data("kendoNotification");
+        notification.show({
+            message: message
+        }, type);
+
+    }
+
+    //Clear all files
+    $(document).ready(function () {
+        var upload = $("#files").data("kendoUpload");
+        upload.clearAllFiles();
+
+     });
+
     function error_handler(e) {
         if (e.errors) {
             var message = "Ошибки:\n";
@@ -58,19 +135,77 @@
                 }
             });
 
-            kendo.alert(message);
-            var grid = $("#gridCategories").data("kendoGrid");
+            showMessage("error", message);
+            var grid = $("#gridJOURNAL").data("kendoGrid");
             grid.cancelChanges();
         }
     }
 
+    function onUploadSuccess(e) {
+        var upload = $("#files").data("kendoUpload");
+        var file = e.files[0];
+        //Clear if upload Success
+        upload.clearFileByUid(file.uid);
+        //Refresh to the grid
+        var grid = $("#gridJOURNAL").data("kendoGrid");
+        grid.dataSource.read();
+        //console.log("Success (" + e.operation + ") :: " + getFileInfo(e));
+    }
 
-    function getContent(e) {
-        e.preventDefault();
+    function onUploadError(e) {
+        if (e.operation == "upload") {
+            var file = e.files[0];
+            var err = e.XMLHttpRequest.responseText;
+            var element = $('li[data-uid=' + file.uid + ']');
+            element.children("span.k-file-name-size-wrapper").children("span.k-file-size").remove();
+            element.children("span.k-file-name-size-wrapper").append('<span class="k-file-validation-message">'+err+'</span>');
+        }
+
+    }
+
+    function Modify(id)
+    {
+        var grid = $("#gridJOURNAL").data("kendoGrid");
+        var dataItem = grid.dataSource.get(id);
+      
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Modify", "JournalService")",
+            datatype: 'json',
+            data: {id : id },
+            success: function (data) {
                 
-        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-        window.location.href = "@Url.RouteUrl(new { Controller = "JournalService", Action = "GetContent"})/?id=" + dataItem.id;
+                if (data.message == "OK") {
+                    var dataSource = grid.dataSource;
 
+                    dataItem.modified = true;
+                    dataSource.pushUpdate(dataItem);
+
+                }
+                else {
+                    showMessage("error", data.result);
+                      }
+                  },
+            error: function (xhr, ajaxOptions, thrownError) {
+                      showMessage("error", xhr.status + " " + thrownError);
+
+            }
+
+                });
+    }
+
+
+
+    function getFileInfo(e) {
+        return $.map(e.files, function (file) {
+            var info = file.name;
+
+            // File size is not available in all browsers
+            if (file.size > 0) {
+                info += " (" + Math.ceil(file.size / 1024) + " KB)";
+            }
+            return info;
+        }).join(", ");
     }
 </script>
 

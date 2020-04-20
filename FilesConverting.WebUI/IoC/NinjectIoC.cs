@@ -1,6 +1,7 @@
 ﻿using Ninject;
 using FilesConverting.Domain.Repository.Interfaces;
 using FilesConverting.Domain.Repository.Realizations.EF;
+using FilesConverting.Domain.Repository.Realizations.API;
 
 namespace FilesConverting.WebUI.IoC
 {
@@ -16,7 +17,8 @@ namespace FilesConverting.WebUI.IoC
         private static IKernel AddBindings(IKernel ninjectKernel)
         {
             ninjectKernel.Bind<IDBRepository>().To<EFRepository>();
-           
+            ninjectKernel.Bind<IEmployeeRepository>().To<APIEmployeeRepository>().InSingletonScope().WithConstructorArgument("api_path", System.Configuration.ConfigurationManager.AppSettings["api"]);
+
             return ninjectKernel;
         }
     }

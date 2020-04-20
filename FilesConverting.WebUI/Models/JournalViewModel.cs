@@ -10,7 +10,7 @@ namespace FilesConverting.WebUI.Models
 {
     public class JournalViewModel
     {
-        [ScaffoldColumn(false)]
+        
         public long id { get; set; }
 
         [DisplayName("Дата и время")]
@@ -21,7 +21,13 @@ namespace FilesConverting.WebUI.Models
         [StringLength(150)]
         [Required]
         public string filename { get; set; }
-        
-        
+
+        [DisplayName("Размер файла")]
+        [Required]
+        public int filesize { get; set; }
+
+        [DisplayName("?Изменён")]
+        public bool modified { get; set; }
+
     }
 }

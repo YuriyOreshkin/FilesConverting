@@ -40,8 +40,8 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -54,10 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\EMPLOYEE.cs" />
     <Compile Include="Entities\JOURNAL.cs" />
+    <Compile Include="Entities\ROLE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Interfaces\IDBRepository.cs" />
     <Compile Include="Repository\Interfaces\ICRUDRepository.cs" />
+    <Compile Include="Repository\Interfaces\IEmployeeRepository.cs" />
+    <Compile Include="Repository\Realizations\API\APIEmployeeRepository.cs" />
     <Compile Include="Repository\Realizations\EF\DBContext.cs" />
     <Compile Include="Repository\Realizations\EF\EFCRUDRepository.cs" />
     <Compile Include="Repository\Realizations\EF\EFRepository.cs" />
