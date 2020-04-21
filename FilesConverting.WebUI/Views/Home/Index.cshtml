@@ -3,15 +3,13 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-@Html.ActionLink("Работник", "Employee", "Home")
 
 <div id="appendto" style="background: #edeef0;"></div>
 @(Html.Kendo().Grid<FilesConverting.WebUI.Models.JournalViewModel>()
             .Name("gridJOURNAL")
             .Columns(columns =>
             {
-                columns.Bound(p => p.modified).ClientTemplate("<input  class='k-checkbox' type='checkbox'  #=modified ?  checked='checked' : '' #  /><label class='k-checkbox-label'></label>").Width(100).Filterable(false).Sortable(false);
+                columns.Bound(p => p.modified).ClientTemplate("<input  class='k-checkbox' type='checkbox'  #=modified ?  checked='checked' : '' #  /><label class='k-checkbox-label'></label>").Width(110).Filterable(false).Sortable(false).HtmlAttributes(new { style= "text-align:  center;" });
                 columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(200);
                 columns.Bound(p => p.filename);
                 columns.Bound(p => p.filesize).Width(200).Filterable(false);
@@ -19,9 +17,9 @@
                                             " # if(modified){ #" +
                                                 "<a class='k-button' href='/JournalService/GetContent?id= #= id#'>Скачать</a>" +
                                             "# }else { #" +
-                                                "<button id='modify_#= id #' class='k-button k-primary' onclick='Modify(#= id#)'>Заменить</button>" +
+                                                "<button id='modify_#= id #' class='k-button k-primary' onclick='Modify(#= id#)'>Исправить</button>" +
                                             "# } #"
-                                        ).Sortable(false).Filterable(false).Width(200); 
+                                        ).Sortable(false).Filterable(false).Width(200);
                 columns.Command(command => command.Destroy()).Width(180);
 
             })
@@ -79,6 +77,7 @@
                                           .AutoHideAfter(3000)
                                           .Templates(t =>
                                               {
+                                                  t.Add().Type("success").ClientTemplateID("successTemplate");
                                                   t.Add().Type("error").ClientTemplateID("errorTemplate");
                                               })
         )
@@ -90,6 +89,13 @@
         <p>#= message #</p>
     </div>
 </script>
+
+<script id="successTemplate" type="text/x-kendo-template">
+    <div class="upload-success">
+        <span class="k-icon k-i-success" style="font-size: 36px;"></span>
+        <h4>#= message #</h4>
+    </div>
+</script>
 <style>
     /* Notifications */
     .k-notification h3 {
@@ -98,10 +104,20 @@
         line-height: normal;
     }
 
+    .k-notification h4 {
+        padding: 30px 10px 5px;
+        font-size: 1em;
+        line-height: normal;
+    }
     .k-notification .k-icon {
         margin: 20px;
         float: left;
     }
+    .upload-success {
+        width: 300px;
+        height: 70px;
+    }
+
 
     
 </style>
@@ -149,6 +165,8 @@
         //Refresh to the grid
         var grid = $("#gridJOURNAL").data("kendoGrid");
         grid.dataSource.read();
+        //Message
+        showMessage("success", "Файл '" + file.name + "' успешно загружен!")
         //console.log("Success (" + e.operation + ") :: " + getFileInfo(e));
     }
 
@@ -180,6 +198,8 @@
 
                     dataItem.modified = true;
                     dataSource.pushUpdate(dataItem);
+
+                    showMessage("success", "Файл '" + dataItem.filename + "' успешно исправлен!")
 
                 }
                 else {

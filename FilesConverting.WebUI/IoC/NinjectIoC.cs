@@ -19,6 +19,7 @@ namespace FilesConverting.WebUI.IoC
             ninjectKernel.Bind<IDBRepository>().To<EFRepository>();
             ninjectKernel.Bind<IEmployeeRepository>().To<APIEmployeeRepository>().InSingletonScope().WithConstructorArgument("api_path", System.Configuration.ConfigurationManager.AppSettings["api"]);
 
+
             return ninjectKernel;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using FilesConverting.Domain.Repository.Interfaces;
+using FilesConverting.WebUI.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,21 +10,18 @@ namespace FilesConverting.WebUI.Controllers
 {
     public class HomeController : Controller
     {
-        private IEmployeeRepository db;
-        public HomeController(IEmployeeRepository _db)
-        {
-            db = _db;
-        }
         // GET: Home
+        [CustomAuthAttribute(Roles = "2")]
         public ActionResult Index()
         {
+        
             return View();
         }
 
-        public ActionResult Employee()
+        [Authorize]
+        public ActionResult AccessDenied()
         {
-            var Employee = db.GetEmployeeROLES("DVOR1", "007OreshkinYV");
-            return Content(Employee.First().NAME);
+            return View();
         }
 
     }

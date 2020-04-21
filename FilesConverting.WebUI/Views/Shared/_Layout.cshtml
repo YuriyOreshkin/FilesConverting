@@ -14,8 +14,22 @@
     <script>
         kendo.culture("ru-RU");
     </script>
+
 </head>
-    <body>
-        @RenderBody()
-    </body>
+<body>
+    <div class="page">
+
+        <header>
+            <div id="user" style="display:inline-block; background-color: #696969; font-weight: bold; float:right; height:100%; padding: 16px 15px 14px;">
+                <h3>@(((FilesConverting.WebUI.Models.CustomPrincipal)User).FIO)</h3>
+                
+            </div>
+            <h1>МСК ЕВ V</h1>
+        </header>
+        <section id="main">
+            @RenderBody()
+        </section>
+        <footer></footer>
+    </div>
+</body>
 </html>

@@ -9,6 +9,9 @@ using System.Web.Mvc;
 using FilesConverting.WebUI.Models;
 using FilesConverting.Domain.Entities;
 using System.IO;
+using System.Xml.Schema;
+using System.Xml.Linq;
+using System.Text;
 
 namespace FilesConverting.WebUI.Controllers.Services
 {
@@ -50,12 +53,20 @@ namespace FilesConverting.WebUI.Controllers.Services
                 foreach (var file in files)
                 {
                     
-                    var fileName = Path.GetFileName(file.FileName);
 
+                    var fileName = Path.GetFileName(file.FileName);
+                    //UNIQ name
                     if (db.JOURNAL.Get().Any(n => n.FILENAME == fileName))
                     {
                         return Content("Файл с таким именем уже существует в базе данных!");
-                    }  
+                    }
+
+                    //StreamReader inputStreamReader = new StreamReader(file.InputStream, Encoding.UTF8);
+                    //string xml_str = inputStreamReader.ReadToEnd();
+
+                    
+
+                    //Save in database
                     JOURNAL journal = new JOURNAL();
                     journal.UPLOAD = DateTime.Now;
                     journal.FILENAME = fileName;
@@ -63,6 +74,27 @@ namespace FilesConverting.WebUI.Controllers.Services
                     journal.FILECONTENT = new byte[file.ContentLength];
                     journal.FILESIZE = file.ContentLength;
                     file.InputStream.Read(journal.FILECONTENT, 0, file.ContentLength);
+
+
+                    //Проверка xml на согласованность схеме
+                    string result = "";
+                    using (var ms = new MemoryStream(journal.FILECONTENT))
+                    {
+                        XmlSchemaSet shema = new XmlSchemaSet();
+                        shema.Add("", Server.MapPath(@"~\App_Data\shema.xsd"));
+
+                        XDocument xmldoc = XDocument.Load(ms);
+
+
+                        xmldoc.Validate(shema, (o, e) =>
+                        {
+                            result = "Файл не соответствует указаной схеме!" + "\n" + e.Message;
+
+                        });
+                    }
+
+                    if (!String.IsNullOrEmpty(result))
+                        return Content(result);
 
                     try
                     {
@@ -112,75 +144,15 @@ namespace FilesConverting.WebUI.Controllers.Services
                  return Json(new { message = "errors", result = exc.Message }, JsonRequestBehavior.AllowGet);
              }
 
-            
-
         }
 
-        /*//Create
-        [HttpPost]
-        public ActionResult CreateForGrid([DataSourceRequest]DataSourceRequest request, CategoryViewModel category)
-        {
-            
-            if (ModelState.IsValid)
-            {
-                CATEGORY entity = category.ToEntity(new CATEGORY());
-                try
-                {
-                    db.CATEGORIES.Create(entity);
-                    category.id = entity.ID;
-
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("CATEGORY", ex.Message);
-                }
-            }
-
-            return Json(new[] { category }.ToDataSourceResult(request, ModelState));
-
-        }
-
-        //Update
-        [HttpPost]
-        public ActionResult UpdateForGrid([DataSourceRequest]DataSourceRequest request, CategoryViewModel category)
-        {
-            
-                CATEGORY entity = db.CATEGORIES.Get().FirstOrDefault(c => c.ID == category.id);
-
-                if (entity == null)
-                {
-                    ModelState.AddModelError("CATEGORY", String.Format("Категория '{0}' не обнаружена в базе данных!", category.name));
-                }
-                else
-                {
-                    //TODO Validate not found
-                    entity = category.ToEntity(entity);
-                }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    db.CATEGORIES.Update(entity);
-
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("CATEGORY", ex.Message);
-                }
-            }
-
-            return Json(new[] { category }.ToDataSourceResult(request, ModelState));
-
-        }
-        */
         //Delete
         [HttpPost]
         public ActionResult DestroyForGrid([DataSourceRequest]DataSourceRequest request, JournalViewModel journal)
         {
            
                 JOURNAL entity = db.JOURNAL.Get().FirstOrDefault(j => j.ID == journal.id);
-                if (entity != null)
+                if (entity == null)
                 {
                     ModelState.AddModelError("JOURNAL", String.Format("Файл '{0}' не обнаружена в базе данных!", journal.filename));
                 }

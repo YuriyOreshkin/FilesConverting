@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="МСК">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="Ведомость">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Строка">
+                <xs:complexType>
+                  <xs:attribute name="ДатаДоговора" type="xs:string" use="required" />
+                  <xs:attribute name="Начислено" type="xs:decimal" use="required" />
+                  <xs:attribute name="НомерДоговора" type="xs:string" use="required" />
+                  <xs:attribute name="НомерЗакладной" type="xs:string" use="required" />
+                  <xs:attribute name="НомерСчетаФизЛица" type="xs:integer" use="required" />
+                  <xs:attribute name="Получатель" type="xs:string" use="required" />
+                  <xs:attribute name="Резерв" type="xs:decimal" use="required" />
+                  <xs:attribute name="СуммаПодлежащаяПеречислению" type="xs:decimal" use="required" />
+                  <xs:attribute name="ФИО" type="xs:string" use="required" />
+                  <xs:attribute name="ФИОПоДоговору" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="БИК" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="ВидВедомости" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="ДокДата" type="xs:date" use="required" />
+            <xs:attribute name="ДокНомер" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="ИНН" type="xs:unsignedLong" use="required" />
+            <xs:attribute name="КБКДоходов" type="xs:string" use="required" />
+            <xs:attribute name="КПП" type="xs:unsignedInt" use="required" />
+            <xs:attribute name="НаименованиеБанка" type="xs:string" use="required" />
+            <xs:attribute name="НаименованиеДоставщика" type="xs:string" use="required" />
+            <xs:attribute name="НомерКорСчета" type="xs:integer" use="required" />
+            <xs:attribute name="НомерСчета" type="xs:unsignedByte" use="required" />
+            <xs:attribute name="ОКАТО" type="xs:string" use="required" />
+            <xs:attribute name="ЦелевоеНазначение" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

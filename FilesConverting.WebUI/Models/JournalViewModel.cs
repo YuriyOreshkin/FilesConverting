@@ -26,7 +26,7 @@ namespace FilesConverting.WebUI.Models
         [Required]
         public int filesize { get; set; }
 
-        [DisplayName("?Изменён")]
+        [DisplayName("?Исправлен")]
         public bool modified { get; set; }
 
     }

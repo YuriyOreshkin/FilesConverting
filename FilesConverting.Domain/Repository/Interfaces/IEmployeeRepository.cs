@@ -9,7 +9,7 @@ namespace FilesConverting.Domain.Repository.Interfaces
 {
     public interface IEmployeeRepository
     {
-        //EMPLOYEE GetEmployee(string login);
+        EMPLOYEE GetEmployee(string login);
 
         IEnumerable<ROLE> GetEmployeeROLES(string project, string login);
     }
