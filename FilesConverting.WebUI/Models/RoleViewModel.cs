@@ -5,7 +5,7 @@ using System.Web;
 
 namespace FilesConverting.WebUI.Models
 {
-    public class RoleViewModel
+    public class getRoleAPI
     {
         public long ID { get; set; }
         public string NAME { get; set; }

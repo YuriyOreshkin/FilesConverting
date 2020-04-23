@@ -1,5 +1,4 @@
-﻿
-using FilesConverting.Domain.Repository.Interfaces;
+﻿using FilesConverting.Domain.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

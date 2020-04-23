@@ -46,13 +46,16 @@ namespace FilesConverting.Domain.Repository.Realizations.API
                 var responseString = response.Content.ReadAsStringAsync().Result;
                 dynamic obj = JsonConvert.DeserializeObject(responseString);
                 List<ROLE> result = new List<ROLE>();
-                foreach (var role in obj.Roles)
+                var roles = obj.Roles;
+                if (roles != null)
                 {
-                    
-                    result.Add(new ROLE { ID = role.ID, NAME =  role.NAME});
-                    
-                }
+                    foreach (var role in roles)
+                    {
 
+                        result.Add(new ROLE { ID = role.ID, NAME = role.NAME });
+
+                    }
+                }
                 return result.AsQueryable();
 
             }

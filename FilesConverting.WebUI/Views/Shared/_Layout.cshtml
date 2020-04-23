@@ -18,13 +18,13 @@
 </head>
 <body>
     <div class="page">
-
         <header>
-            <div id="user" style="display:inline-block; background-color: #696969; font-weight: bold; float:right; height:100%; padding: 16px 15px 14px;">
-                <h3>@(((FilesConverting.WebUI.Models.CustomPrincipal)User).FIO)</h3>
-                
+            <div>
+                <div id="user" style="display:inline-block; background-color:rgb(63, 63, 63); font-weight: bold; float:right; height:100%; padding: 15px;margin: 10px 0px; color:white;">
+                    <span style="font-size: 1.2em;">@(((FilesConverting.WebUI.Models.CustomPrincipal)User).FIO)</span>
+                </div>
+                <h1>МСК ЕВ V</h1>
             </div>
-            <h1>МСК ЕВ V</h1>
         </header>
         <section id="main">
             @RenderBody()

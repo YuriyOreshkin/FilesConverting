@@ -22,7 +22,7 @@ namespace FilesConverting.WebUI.Models
         [Required]
         public string filename { get; set; }
 
-        [DisplayName("Размер файла")]
+        [DisplayName("Размер")]
         [Required]
         public int filesize { get; set; }
 

@@ -12,8 +12,8 @@ namespace FilesConverting.WebUI.Controllers
     {
         public IHttpActionResult Get()
         {
-            List<RoleViewModel> roles = new List<RoleViewModel>() {
-            new RoleViewModel { ID = 1, NAME = "Администратор", FORALL = true } };
+            List<getRoleAPI> roles = new List<getRoleAPI>() {
+            new getRoleAPI { ID = 1, NAME = "Администратор", FORALL = false } };
         
             return Ok(roles);
         }

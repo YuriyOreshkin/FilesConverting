@@ -8,8 +8,8 @@
     <ProjectGuid>{76675408-0B29-4AB1-B4A0-844968B1E84D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StaffRating.Domain</RootNamespace>
-    <AssemblyName>StaffRating.Domain</AssemblyName>
+    <RootNamespace>FilesConverting.Domain</RootNamespace>
+    <AssemblyName>FilesConverting.Domain</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

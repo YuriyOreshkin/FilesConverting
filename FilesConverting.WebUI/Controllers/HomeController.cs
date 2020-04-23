@@ -11,7 +11,7 @@ namespace FilesConverting.WebUI.Controllers
     public class HomeController : Controller
     {
         // GET: Home
-        [CustomAuthAttribute(Roles = "2")]
+        [CustomAuthorize]
         public ActionResult Index()
         {
         

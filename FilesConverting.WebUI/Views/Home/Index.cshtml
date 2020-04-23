@@ -9,17 +9,17 @@
             .Name("gridJOURNAL")
             .Columns(columns =>
             {
-                columns.Bound(p => p.modified).ClientTemplate("<input  class='k-checkbox' type='checkbox'  #=modified ?  checked='checked' : '' #  /><label class='k-checkbox-label'></label>").Width(110).Filterable(false).Sortable(false).HtmlAttributes(new { style= "text-align:  center;" });
-                columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(200);
-                columns.Bound(p => p.filename);
-                columns.Bound(p => p.filesize).Width(200).Filterable(false);
+                columns.Bound(p => p.modified).ClientTemplate("<input  class='k-checkbox' type='checkbox'  #=modified ?  checked='checked' : '' #  /><label class='k-checkbox-label'></label>").Width(95).Filterable(false).Sortable(false).HtmlAttributes(new { style= "text-align:  center;" });
+                columns.Bound(p => p.upload).Format("{0:dd.MM.yyyy H:mm}").Width(150);
+                columns.Bound(p => p.filename).Width(350);
+                columns.Bound(p => p.filesize).Width(80).Filterable(false);
                 columns.Bound(p => p.id).Title("").ClientTemplate(
                                             " # if(modified){ #" +
-                                                "<a class='k-button' href='/JournalService/GetContent?id= #= id#'>Скачать</a>" +
+                                                "<a class='k-button' href='"+ Url.Content("~/JournalService/GetContent") + "?id= #= id#'>Скачать</a>" +
                                             "# }else { #" +
                                                 "<button id='modify_#= id #' class='k-button k-primary' onclick='Modify(#= id#)'>Исправить</button>" +
                                             "# } #"
-                                        ).Sortable(false).Filterable(false).Width(200);
+                                        ).Sortable(false).Filterable(false).Width(120);
                 columns.Command(command => command.Destroy()).Width(180);
 
             })
@@ -47,10 +47,12 @@
                     )
 
                 </text>);
-                    })
+            })
+                .Resizable(resize => resize.Columns(true))
                 .Sortable()
                 .Scrollable()
                 .Filterable()
+                .HtmlAttributes(new { style= "height: 85vh" })
                 .DataSource(dataSource => dataSource
                 .Ajax()
                 .Model(model => model.Id(id => id.id))
